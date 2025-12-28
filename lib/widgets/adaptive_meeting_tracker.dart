@@ -77,17 +77,10 @@ class AdaptiveMeetingTracker extends StatelessWidget {
               ],
             ),
             
-            // Animated turtle (floating in corner)
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: Opacity(
-                opacity: 0.6,
-                child: AnimatedTurtleWidget(
-                  textColor: textColor,
-                  accentColor: accentColor,
-                ),
-              ),
+            // Animated turtle (moves around border based on meeting progress)
+            AnimatedTurtleWidget(
+              textColor: textColor,
+              accentColor: accentColor,
             ),
           ],
         );
