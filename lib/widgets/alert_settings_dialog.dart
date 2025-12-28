@@ -65,10 +65,10 @@ class AlertSettingsDialog extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Visual Alerts',
                             style: TextStyle(
                               fontSize: 13,
@@ -76,13 +76,12 @@ class AlertSettingsDialog extends StatelessWidget {
                               color: Color(0xFFB8D4E3),
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             'Flashing and opacity changes',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFFB8D4E3),
-                              opacity: 0.7,
+                              color: Color(0xFFB8D4E3).withOpacity(0.7),
                             ),
                           ),
                         ],
@@ -111,10 +110,10 @@ class AlertSettingsDialog extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Audio Alerts',
                             style: TextStyle(
                               fontSize: 13,
@@ -122,13 +121,12 @@ class AlertSettingsDialog extends StatelessWidget {
                               color: Color(0xFFB8D4E3),
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             'Sound notifications',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFFB8D4E3),
-                              opacity: 0.7,
+                              color: Color(0xFFB8D4E3).withOpacity(0.7),
                             ),
                           ),
                         ],

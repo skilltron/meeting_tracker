@@ -14,6 +14,8 @@ import 'todays_meetings_list.dart';
 import 'social_tips_widget.dart';
 import 'breathing_exercise_widget.dart';
 import 'quick_notes_widget.dart';
+import 'animated_turtle_widget.dart';
+import 'vagus_reminder_widget.dart';
 
 class AdaptiveMeetingTracker extends StatelessWidget {
   final Color textColor;
@@ -37,30 +39,57 @@ class AdaptiveMeetingTracker extends StatelessWidget {
           layoutProvider.updateFromUsage(usageTracker);
         });
         
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+        return Stack(
+          children: [
+            Column(
               children: [
-                // Header with prediction indicator
-                _buildHeader(context, predictedFeatures),
-                const SizedBox(height: 20),
+                // Vagus nerve stimulator reminder (if showing)
+                VagusReminderWidget(textColor: textColor, accentColor: accentColor),
                 
-                // Meeting display (always primary, top priority)
-                _buildMeetingSection(context),
-                const SizedBox(height: 20),
-                
-                // Primary features (most used) - always visible
-                _buildPrimarySection(context, config, predictedFeatures),
-                
-                // Secondary features - shown based on mode
-                if (config.mode != LayoutMode.compact)
-                  _buildSecondarySection(context, config, predictedFeatures),
+                // Main content
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header with prediction indicator
+                          _buildHeader(context, predictedFeatures),
+                          const SizedBox(height: 20),
+                          
+                          // Meeting display (always primary, top priority)
+                          _buildMeetingSection(context),
+                          const SizedBox(height: 20),
+                          
+                          // Primary features (most used) - always visible
+                          _buildPrimarySection(context, config, predictedFeatures),
+                          
+                          // Secondary features - shown based on mode
+                          if (config.mode != LayoutMode.compact)
+                            _buildSecondarySection(context, config, predictedFeatures),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
+            
+            // Animated turtle (floating in corner)
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: Opacity(
+                opacity: 0.6,
+                child: AnimatedTurtleWidget(
+                  textColor: textColor,
+                  accentColor: accentColor,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -315,8 +344,6 @@ class AdaptiveMeetingTracker extends StatelessWidget {
         );
       case FeatureType.notes:
         return const SizedBox.shrink(); // Notes handled separately
-      default:
-        return const SizedBox.shrink();
       default:
         return const SizedBox.shrink();
     }

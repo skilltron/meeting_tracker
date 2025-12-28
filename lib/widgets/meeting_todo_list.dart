@@ -19,6 +19,62 @@ class MeetingTodoDialog extends StatefulWidget {
 
 class _MeetingTodoDialogState extends State<MeetingTodoDialog> {
   final TextEditingController _todoController = TextEditingController();
+  TodoPriority _selectedPriority = TodoPriority.medium;
+  
+  Color _getPriorityColor(TodoPriority priority) {
+    switch (priority) {
+      case TodoPriority.critical:
+        return const Color(0xFFD4A5A5).withOpacity(0.4);
+      case TodoPriority.high:
+        return const Color(0xFFD4C4A5).withOpacity(0.25);
+      case TodoPriority.medium:
+        return const Color(0xFF1F2A4A).withOpacity(0.6);
+      case TodoPriority.low:
+        return const Color(0xFF1A1A2E).withOpacity(0.8);
+    }
+  }
+  
+  Color _getPriorityBorderColor(TodoPriority priority) {
+    switch (priority) {
+      case TodoPriority.critical:
+        return const Color(0xFFD4A5A5).withOpacity(0.6);
+      case TodoPriority.high:
+        return const Color(0xFFD4C4A5).withOpacity(0.4);
+      case TodoPriority.medium:
+        return const Color(0xFFA8D5BA).withOpacity(0.3);
+      case TodoPriority.low:
+        return const Color(0xFFA8D5BA).withOpacity(0.15);
+    }
+  }
+  
+  Color _getPriorityTextColor(TodoPriority priority, bool isCompleted) {
+    if (isCompleted) {
+      return const Color(0xFFA8D5BA).withOpacity(0.7);
+    }
+    switch (priority) {
+      case TodoPriority.critical:
+        return const Color(0xFFD4A5A5);
+      case TodoPriority.high:
+        return const Color(0xFFD4C4A5);
+      case TodoPriority.medium:
+        return const Color(0xFFB8D4E3);
+      case TodoPriority.low:
+        return const Color(0xFFB8D4E3).withOpacity(0.7);
+    }
+  }
+  
+  String _getPriorityLabel(TodoPriority priority) {
+    switch (priority) {
+      case TodoPriority.critical:
+        return 'Critical';
+      case TodoPriority.high:
+        return 'High';
+      case TodoPriority.medium:
+        return 'Medium';
+      case TodoPriority.low:
+        return 'Low';
+    }
+  }
   
   @override
   void dispose() {
@@ -74,85 +130,132 @@ class _MeetingTodoDialogState extends State<MeetingTodoDialog> {
                 ),
                 const SizedBox(height: 20),
                 
-                // Add new todo
-                Row(
+                // Add new todo with priority selector
+                Column(
                   children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _todoController,
-                        style: const TextStyle(
-                          color: Color(0xFFB8D4E3),
-                          fontSize: 13,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _todoController,
+                            style: const TextStyle(
+                              color: Color(0xFFB8D4E3),
+                              fontSize: 13,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Add preparation task...',
+                              hintStyle: TextStyle(
+                                color: const Color(0xFFB8D4E3).withOpacity(0.5),
+                                fontSize: 13,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: const Color(0xFFA8D5BA).withOpacity(0.4),
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: const Color(0xFFA8D5BA).withOpacity(0.4),
+                                  width: 1.5,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFA8D5BA),
+                                  width: 1.5,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFF1A1A2E).withOpacity(0.5),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                            ),
+                            onSubmitted: (value) {
+                              if (value.trim().isNotEmpty) {
+                                todoProvider.addTodo(widget.meetingId, value, priority: _selectedPriority);
+                                _todoController.clear();
+                              }
+                            },
+                          ),
                         ),
-                        decoration: InputDecoration(
-                          hintText: 'Add preparation task...',
-                          hintStyle: TextStyle(
-                            color: const Color(0xFFB8D4E3).withOpacity(0.5),
-                            fontSize: 13,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: const Color(0xFFA8D5BA).withOpacity(0.4),
-                              width: 1.5,
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            if (_todoController.text.trim().isNotEmpty) {
+                              todoProvider.addTodo(
+                                widget.meetingId,
+                                _todoController.text,
+                                priority: _selectedPriority,
+                              );
+                              _todoController.clear();
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFA8D5BA).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFA8D5BA).withOpacity(0.4),
+                                width: 1.5,
+                              ),
                             ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: const Color(0xFFA8D5BA).withOpacity(0.4),
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            child: const Icon(
+                              Icons.add,
                               color: Color(0xFFA8D5BA),
-                              width: 1.5,
+                              size: 20,
                             ),
                           ),
-                          filled: true,
-                          fillColor: const Color(0xFF1A1A2E).withOpacity(0.5),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
                         ),
-                        onSubmitted: (value) {
-                          if (value.trim().isNotEmpty) {
-                            todoProvider.addTodo(widget.meetingId, value);
-                            _todoController.clear();
-                          }
-                        },
-                      ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        if (_todoController.text.trim().isNotEmpty) {
-                          todoProvider.addTodo(
-                            widget.meetingId,
-                            _todoController.text,
-                          );
-                          _todoController.clear();
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFA8D5BA).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFFA8D5BA).withOpacity(0.4),
-                            width: 1.5,
+                    const SizedBox(height: 8),
+                    // Priority selector
+                    Row(
+                      children: [
+                        Text(
+                          'Priority:',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: const Color(0xFFB8D4E3).withOpacity(0.7),
                           ),
                         ),
-                        child: const Icon(
-                          Icons.add,
-                          color: Color(0xFFA8D5BA),
-                          size: 20,
-                        ),
-                      ),
+                        const SizedBox(width: 8),
+                        ...TodoPriority.values.map((priority) {
+                          final isSelected = _selectedPriority == priority;
+                          return GestureDetector(
+                            onTap: () => setState(() => _selectedPriority = priority),
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? _getPriorityColor(priority)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: _getPriorityBorderColor(priority),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                _getPriorityLabel(priority),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: _getPriorityTextColor(priority, false),
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
                     ),
                   ],
                 ),
@@ -228,9 +331,54 @@ class _TodoItemState extends State<_TodoItem> {
     super.dispose();
   }
   
+  Color _getPriorityColor(TodoPriority priority) {
+    switch (priority) {
+      case TodoPriority.critical:
+        return const Color(0xFFD4A5A5).withOpacity(0.4); // Red-tinted, most visible
+      case TodoPriority.high:
+        return const Color(0xFFD4C4A5).withOpacity(0.25); // Yellow-tinted, visible
+      case TodoPriority.medium:
+        return const Color(0xFF1F2A4A).withOpacity(0.6); // Blue-tinted, more background
+      case TodoPriority.low:
+        return const Color(0xFF1A1A2E).withOpacity(0.8); // Dark, most background
+    }
+  }
+  
+  Color _getPriorityBorderColor(TodoPriority priority) {
+    switch (priority) {
+      case TodoPriority.critical:
+        return const Color(0xFFD4A5A5).withOpacity(0.6);
+      case TodoPriority.high:
+        return const Color(0xFFD4C4A5).withOpacity(0.4);
+      case TodoPriority.medium:
+        return const Color(0xFFA8D5BA).withOpacity(0.3);
+      case TodoPriority.low:
+        return const Color(0xFFA8D5BA).withOpacity(0.15);
+    }
+  }
+  
+  Color _getPriorityTextColor(TodoPriority priority, bool isCompleted) {
+    if (isCompleted) {
+      return const Color(0xFFA8D5BA).withOpacity(0.7);
+    }
+    switch (priority) {
+      case TodoPriority.critical:
+        return const Color(0xFFD4A5A5); // Bright red-tinted
+      case TodoPriority.high:
+        return const Color(0xFFD4C4A5); // Yellow-tinted
+      case TodoPriority.medium:
+        return const Color(0xFFB8D4E3); // Standard text
+      case TodoPriority.low:
+        return const Color(0xFFB8D4E3).withOpacity(0.7); // Dimmed
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final isCompleted = widget.todo.isCompleted;
+    final priorityColor = _getPriorityColor(widget.todo.priority);
+    final borderColor = _getPriorityBorderColor(widget.todo.priority);
+    final textColor = _getPriorityTextColor(widget.todo.priority, isCompleted);
     
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -238,13 +386,13 @@ class _TodoItemState extends State<_TodoItem> {
       decoration: BoxDecoration(
         color: isCompleted
             ? const Color(0xFFA8D5BA).withOpacity(0.1)
-            : const Color(0xFF1A1A2E).withOpacity(0.5),
+            : priorityColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isCompleted
               ? const Color(0xFFA8D5BA).withOpacity(0.3)
-              : const Color(0xFFA8D5BA).withOpacity(0.2),
-          width: 1,
+              : borderColor,
+          width: isCompleted ? 1 : (widget.todo.priority == TodoPriority.critical ? 2 : 1.5),
         ),
       ),
       child: Row(
@@ -284,32 +432,48 @@ class _TodoItemState extends State<_TodoItem> {
                 ? TextField(
                     controller: _editController,
                     style: TextStyle(
-                      color: isCompleted
-                          ? const Color(0xFFA8D5BA).withOpacity(0.7)
-                          : const Color(0xFFB8D4E3),
+                      color: textColor,
                       fontSize: 13,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    )
+                    ),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  )
                 : GestureDetector(
                     onTap: () => setState(() => _isEditing = true),
                     onLongPress: widget.onDelete,
-                    child: Text(
-                      widget.todo.text,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: isCompleted
-                            ? const Color(0xFFA8D5BA).withOpacity(0.7)
-                            : const Color(0xFFB8D4E3),
-                        decoration: isCompleted
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                        decorationThickness: 2,
-                        decorationColor: const Color(0xFFA8D5BA),
-                      ),
+                    child: Row(
+                      children: [
+                        // Priority indicator
+                        Container(
+                          width: 4,
+                          height: 20,
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: _getPriorityBorderColor(widget.todo.priority),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            widget.todo.text,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: widget.todo.priority == TodoPriority.critical 
+                                  ? FontWeight.w600 
+                                  : FontWeight.normal,
+                              color: textColor,
+                              decoration: isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                              decorationThickness: 2,
+                              decorationColor: const Color(0xFFA8D5BA),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
           ),

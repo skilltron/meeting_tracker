@@ -40,24 +40,70 @@ class TodoProvider with ChangeNotifier {
   }
   
   List<MeetingTodo> getTodosForMeeting(String meetingId) {
-    return _todos
+    final meetingTodos = _todos
         .where((todo) => todo.meetingId == meetingId)
-        .toList()
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        .toList();
+    
+    // Sort by priority first (critical > high > medium > low), then by orderIndex
+    meetingTodos.sort((a, b) {
+      final priorityCompare = a.priorityOrder.compareTo(b.priorityOrder);
+      if (priorityCompare != 0) return priorityCompare;
+      return a.orderIndex.compareTo(b.orderIndex);
+    });
+    
+    return meetingTodos;
   }
   
-  Future<void> addTodo(String meetingId, String text) async {
+  Future<void> addTodo(String meetingId, String text, {TodoPriority priority = TodoPriority.medium}) async {
     if (text.trim().isEmpty) return;
+    
+    // Get max orderIndex for this priority in this meeting
+    final existingTodos = getTodosForMeeting(meetingId);
+    final samePriorityTodos = existingTodos.where((t) => t.priority == priority).toList();
+    final maxOrderIndex = samePriorityTodos.isEmpty 
+        ? 0 
+        : samePriorityTodos.map((t) => t.orderIndex).reduce((a, b) => a > b ? a : b);
     
     final todo = MeetingTodo(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       meetingId: meetingId,
       text: text.trim(),
+      priority: priority,
+      orderIndex: maxOrderIndex + 1,
     );
     
     _todos.add(todo);
     await _saveTodos();
     notifyListeners();
+  }
+  
+  Future<void> updateTodoPriority(String todoId, TodoPriority newPriority) async {
+    final index = _todos.indexWhere((todo) => todo.id == todoId);
+    if (index != -1) {
+      // Get new orderIndex for this priority
+      final meetingId = _todos[index].meetingId;
+      final existingTodos = getTodosForMeeting(meetingId);
+      final samePriorityTodos = existingTodos.where((t) => t.priority == newPriority).toList();
+      final maxOrderIndex = samePriorityTodos.isEmpty 
+          ? 0 
+          : samePriorityTodos.map((t) => t.orderIndex).reduce((a, b) => a > b ? a : b);
+      
+      _todos[index] = _todos[index].copyWith(
+        priority: newPriority,
+        orderIndex: maxOrderIndex + 1,
+      );
+      await _saveTodos();
+      notifyListeners();
+    }
+  }
+  
+  Future<void> reorderTodo(String todoId, int newOrderIndex) async {
+    final index = _todos.indexWhere((todo) => todo.id == todoId);
+    if (index != -1) {
+      _todos[index] = _todos[index].copyWith(orderIndex: newOrderIndex);
+      await _saveTodos();
+      notifyListeners();
+    }
   }
   
   Future<void> toggleTodo(String todoId) async {

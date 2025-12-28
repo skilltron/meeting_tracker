@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum DockPosition {
@@ -29,6 +30,11 @@ class UIProvider with ChangeNotifier {
   bool _visualAlertsEnabled = true;
   bool _audioAlertsEnabled = false;
   
+  // Low stimulation mode (ADHD/ASD friendly)
+  bool _lowStimulationMode = false; // false = ADHD (current), true = Cozy (low stim)
+  double _alertIntensity = 0.0; // 0.0 to 1.0, increases as meeting approaches
+  Color _borderColor = const Color(0xFFA8D5BA); // Green by default, transitions to red
+  
   // Getters
   DockPosition get dockPosition => _dockPosition;
   bool get stayOnTop => _stayOnTop;
@@ -42,6 +48,9 @@ class UIProvider with ChangeNotifier {
   double get ghostOpacity => _ghostOpacity;
   bool get visualAlertsEnabled => _visualAlertsEnabled;
   bool get audioAlertsEnabled => _audioAlertsEnabled;
+  bool get lowStimulationMode => _lowStimulationMode;
+  double get alertIntensity => _alertIntensity;
+  Color get borderColor => _borderColor;
   
   UIProvider() {
     _loadPreferences();
@@ -58,6 +67,14 @@ class UIProvider with ChangeNotifier {
     _mirrorMode = prefs.getBool('mirrorMode') ?? false;
     _visualAlertsEnabled = prefs.getBool('visualAlerts') ?? true;
     _audioAlertsEnabled = prefs.getBool('audioAlerts') ?? false;
+    _lowStimulationMode = prefs.getBool('lowStimulationMode') ?? false;
+    notifyListeners();
+  }
+  
+  Future<void> setLowStimulationMode(bool enabled) async {
+    _lowStimulationMode = enabled;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('lowStimulationMode', enabled);
     notifyListeners();
   }
   
@@ -152,17 +169,45 @@ class UIProvider with ChangeNotifier {
       }
     }
     
-    // Flash rate: ONLY start at 10 minutes, ramp up to 3s at meeting time
-    // Only if visual alerts are enabled
-    if (_visualAlertsEnabled && isMeetingApproaching && minutesUntilMeeting <= 10 && minutesUntilMeeting > 0) {
-      // Accelerate from 10 minutes to 0
-      final timeRemaining = minutesUntilMeeting.clamp(0.0, 10.0);
-      final accelerationFactor = ((10 - timeRemaining) / 10).clamp(0.0, 1.0);
-      // Start at 10s, end at 3s
-      _flashDuration = 10 - (7 * accelerationFactor);
+    // Low stimulation mode: intensity-based alerts instead of flashing
+    if (_lowStimulationMode) {
+      // No flashing in low stimulation mode
+      _flashDuration = 999.0;
+      
+      // Calculate alert intensity (0.0 to 1.0)
+      if (isMeetingApproaching && minutesUntilMeeting <= 20 && minutesUntilMeeting >= 0) {
+        // Intensity increases as meeting approaches
+        _alertIntensity = ((20 - minutesUntilMeeting) / 20).clamp(0.0, 1.0);
+      } else {
+        _alertIntensity = 0.0;
+      }
+      
+      // Border color: green (0.0) to red (1.0)
+      if (_alertIntensity > 0) {
+        _borderColor = Color.lerp(
+          const Color(0xFFA8D5BA), // Green
+          const Color(0xFFD4A5A5), // Red
+          _alertIntensity,
+        )!;
+      } else {
+        _borderColor = const Color(0xFFA8D5BA); // Default green
+      }
     } else {
-      // No flashing if visual alerts disabled or no meeting
-      _flashDuration = 999.0; // Effectively no flashing
+      // ADHD mode: Flash rate - ONLY start at 10 minutes, ramp up to 3s at meeting time
+      // Only if visual alerts are enabled
+      _alertIntensity = 0.0; // Not used in ADHD mode
+      _borderColor = const Color(0xFFA8D5BA); // Default green
+      
+      if (_visualAlertsEnabled && isMeetingApproaching && minutesUntilMeeting <= 10 && minutesUntilMeeting > 0) {
+        // Accelerate from 10 minutes to 0
+        final timeRemaining = minutesUntilMeeting.clamp(0.0, 10.0);
+        final accelerationFactor = ((10 - timeRemaining) / 10).clamp(0.0, 1.0);
+        // Start at 10s, end at 3s
+        _flashDuration = 10 - (7 * accelerationFactor);
+      } else {
+        // No flashing if visual alerts disabled or no meeting
+        _flashDuration = 999.0; // Effectively no flashing
+      }
     }
     
     notifyListeners();

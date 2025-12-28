@@ -9,8 +9,10 @@ import '../providers/notes_provider.dart';
 import '../services/audio_service.dart';
 import '../widgets/meeting_tracker_widget.dart';
 import '../widgets/adaptive_meeting_tracker.dart';
+import '../widgets/stimulation_mode_toggle.dart';
 import '../widgets/dock_controls.dart';
 import '../widgets/quick_notes_widget.dart';
+import '../widgets/alarm_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,6 +52,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _visualUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateVisualEffects();
     });
+    
+    // Set up alarm callback
+    final meetingProvider = Provider.of<MeetingProvider>(context, listen: false);
+    meetingProvider.setOnAlarmTriggered(() {
+      _showAlarmDialog();
+    });
+  }
+  
+  void _showAlarmDialog() {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        final uiProvider = Provider.of<UIProvider>(context, listen: false);
+        return AlarmDialog(
+          textColor: uiProvider.brightness > 0.5 
+              ? const Color(0xFFE0E0E0)
+              : const Color(0xFFB8D4E3),
+          accentColor: const Color(0xFFA8D5BA),
+        );
+      },
+    );
   }
   
   void _updateVisualEffects() {
@@ -164,8 +189,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ? uiProvider.ghostOpacity
                 : uiProvider.opacity;
             
+            // Border color for low stimulation mode
+            final borderColor = uiProvider.lowStimulationMode
+                ? uiProvider.borderColor
+                : accent.withOpacity(0.3);
+            final borderWidth = uiProvider.lowStimulationMode && uiProvider.alertIntensity > 0
+                ? 2.0 + (uiProvider.alertIntensity * 2.0) // 2-4px based on intensity
+                : 0.0;
+            
             return Container(
-              color: backgroundColor,
+              decoration: borderWidth > 0
+                  ? BoxDecoration(
+                      color: backgroundColor,
+                      border: Border.all(
+                        color: borderColor,
+                        width: borderWidth,
+                      ),
+                    )
+                  : null,
+              color: borderWidth == 0 ? backgroundColor : null,
               child: Stack(
                 children: [
                   // Main content with ghost transparency in overlay mode
@@ -188,6 +230,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ? uiProvider.ghostOpacity + 0.2
                           : brightness,
                       child: const DockControls(),
+                    ),
+                  ),
+                  
+                  // Stimulation mode toggle - top left
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Opacity(
+                      opacity: uiProvider.isOverlayMode
+                          ? uiProvider.ghostOpacity + 0.2
+                          : brightness,
+                      child: const StimulationModeToggle(),
                     ),
                   ),
                   

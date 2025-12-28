@@ -4,6 +4,7 @@ import '../providers/meeting_provider.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/todo_provider.dart';
 import 'meeting_todo_list.dart';
+import 'timer_settings_dialog.dart';
 
 class MeetingInfoWidget extends StatelessWidget {
   final Color textColor;
@@ -156,6 +157,48 @@ class MeetingInfoWidget extends StatelessWidget {
                   'RESET',
                   () => meetingProvider.reset(),
                   const Color(0xFF00FF00),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => TimerSettingsDialog(
+                        textColor: textColor,
+                        accentColor: accentColor,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          accentColor.withOpacity(0.12),
+                          accentColor.withOpacity(0.06),
+                        ],
+                      ),
+                      border: Border.all(
+                        color: accentColor.withOpacity(0.3),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: accentColor.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.settings,
+                      size: 14,
+                      color: textColor.withOpacity(0.9),
+                    ),
+                  ),
                 ),
               ],
             ),
