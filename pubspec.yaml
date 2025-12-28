@@ -1,0 +1,50 @@
+name: meeting_tracker
+description: A retro-styled cross-platform meeting tracker with calendar sync
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State management
+  provider: ^6.1.1
+  
+  # HTTP and API calls
+  http: ^1.1.0
+  dio: ^5.4.0
+  
+  # Calendar and OAuth
+  google_sign_in: ^6.1.5
+  msal_flutter: ^2.0.0
+  oauth2: ^2.0.2
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  sqflite: ^2.3.0
+  
+  # WebAuthn/Passkey support
+  local_auth: ^2.1.7
+  crypto: ^3.0.3
+  
+  # Date/time
+  intl: ^0.18.1
+  
+  # Window management (desktop)
+  window_manager: ^0.3.7
+  
+  # UI enhancements
+  cupertino_icons: ^1.0.6
+  
+  # Audio alerts (using system haptics for now)
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
