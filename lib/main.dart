@@ -12,7 +12,7 @@ import 'providers/breathing_provider.dart';
 import 'providers/notes_provider.dart';
 import 'providers/usage_tracker_provider.dart';
 import 'providers/layout_provider.dart';
-import 'providers/vagus_reminder_provider.dart';
+// import 'providers/vagus_reminder_provider.dart'; // TODO: Re-enable when file exists
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,7 +71,7 @@ class MeetingTrackerApp extends StatelessWidget {
           update: (_, usageTracker, previous) =>
               previous ?? LayoutProvider(usageTracker),
         ),
-        ChangeNotifierProvider(create: (_) => VagusReminderProvider()),
+        // ChangeNotifierProvider(create: (_) => VagusReminderProvider()), // TODO: Re-enable when file exists
       ],
       child: MaterialApp(
         title: 'Meeting Tracker',

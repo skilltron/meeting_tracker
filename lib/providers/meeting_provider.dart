@@ -40,6 +40,9 @@ class MeetingProvider with ChangeNotifier {
   TimerMode get mode => _mode;
   Duration get countdownDuration => _countdownDuration;
   bool get countdownCompleted => _countdownCompleted;
+  bool get alarmEnabled => _alarmEnabled;
+  Duration get alarmDuration => _alarmDuration;
+  bool get alarmTriggered => _alarmTriggered;
   String? get currentMeetingTitle => _currentMeetingTitle;
   DateTime? get currentMeetingStart => _currentMeetingStart;
   DateTime? get currentMeetingEnd => _currentMeetingEnd;

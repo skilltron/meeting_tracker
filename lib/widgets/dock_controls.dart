@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/ui_provider.dart';
 import 'alert_settings_dialog.dart';
-import 'vagus_reminder_settings_dialog.dart';
+// import 'vagus_reminder_settings_dialog.dart'; // TODO: Re-enable when file exists
 
 class DockControls extends StatefulWidget {
   const DockControls({super.key});
@@ -120,38 +120,39 @@ class _DockControlsState extends State<DockControls> {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() => _showMenu = false);
-                        showDialog(
-                          context: context,
-                          builder: (context) => const VagusReminderSettingsDialog(),
-                        );
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.favorite,
-                              size: 14,
-                              color: Color(0xFFB8D4E3),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Vagus Reminder',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFFB8D4E3),
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // TODO: Re-enable when VagusReminderSettingsDialog exists
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     setState(() => _showMenu = false);
+                    //     showDialog(
+                    //       context: context,
+                    //       builder: (context) => const VagusReminderSettingsDialog(),
+                    //     );
+                    //   },
+                    //   child: Container(
+                    //     width: double.infinity,
+                    //     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    //     child: Row(
+                    //       children: [
+                    //         const Icon(
+                    //           Icons.favorite,
+                    //           size: 14,
+                    //           color: Color(0xFFB8D4E3),
+                    //         ),
+                    //         const SizedBox(width: 8),
+                    //         const Text(
+                    //           'Vagus Reminder',
+                    //           style: TextStyle(
+                    //             fontSize: 12,
+                    //             color: Color(0xFFB8D4E3),
+                    //             fontWeight: FontWeight.w400,
+                    //             letterSpacing: 0.5,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

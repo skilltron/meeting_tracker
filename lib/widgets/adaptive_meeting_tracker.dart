@@ -15,7 +15,7 @@ import 'social_tips_widget.dart';
 import 'breathing_exercise_widget.dart';
 import 'quick_notes_widget.dart';
 import 'animated_turtle_widget.dart';
-import 'vagus_reminder_widget.dart';
+// import 'vagus_reminder_widget.dart'; // TODO: Re-enable when file exists
 
 class AdaptiveMeetingTracker extends StatelessWidget {
   final Color textColor;
@@ -44,7 +44,7 @@ class AdaptiveMeetingTracker extends StatelessWidget {
             Column(
               children: [
                 // Vagus nerve stimulator reminder (if showing)
-                VagusReminderWidget(textColor: textColor, accentColor: accentColor),
+                // VagusReminderWidget(textColor: textColor, accentColor: accentColor), // TODO: Re-enable when file exists
                 
                 // Main content
                 Expanded(
