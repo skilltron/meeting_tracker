@@ -19,7 +19,7 @@ class AnimatedTurtleWidget extends StatefulWidget {
 }
 
 class _AnimatedTurtleWidgetState extends State<AnimatedTurtleWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _homeStretchController;
   late Animation<double> _breatheAnimation;
