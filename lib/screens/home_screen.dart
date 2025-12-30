@@ -246,12 +246,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     
                     // Quick Notes - bottom left (already uses Positioned internally)
-                    Opacity(
-                      opacity: effectiveOpacity.clamp(0.5, 1.0), // Ensure notes are visible
-                      child: QuickNotesWidget(
-                        textColor: textColor,
-                        accentColor: accent,
-                      ),
+                    QuickNotesWidget(
+                      textColor: textColor,
+                      accentColor: accent,
+                      opacity: effectiveOpacity.clamp(0.5, 1.0), // Pass opacity to widget
                     ),
                   ],
                 ),

@@ -4,7 +4,8 @@ import '../providers/ui_provider.dart';
 import '../widgets/adaptive_meeting_tracker.dart';
 import '../widgets/task_board_widget.dart';
 import '../widgets/scribe_widget.dart';
-import '../widgets/pdf_reader_widget.dart';
+import '../widgets/document_viewer_widget.dart';
+import '../widgets/photo_library_widget.dart';
 
 class MainTabScreen extends StatefulWidget {
   const MainTabScreen({super.key});
@@ -19,7 +20,7 @@ class _MainTabScreenState extends State<MainTabScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
   
   @override
@@ -77,6 +78,7 @@ class _MainTabScreenState extends State<MainTabScreen> with SingleTickerProvider
                     Tab(text: 'TASKS'),
                     Tab(text: 'SCRIBE'),
                     Tab(text: 'DOCS'),
+                    Tab(text: 'PHOTOS'),
                   ],
                 ),
               ),
@@ -115,11 +117,21 @@ class _MainTabScreenState extends State<MainTabScreen> with SingleTickerProvider
                       ),
                     ),
                     
-                    // Docs/PDF tab
+                    // Docs tab (PDF, HTML, MD)
                     Container(
                       color: Colors.transparent,
                       padding: const EdgeInsets.all(16),
-                      child: PDFReaderWidget(
+                      child: DocumentViewerWidget(
+                        textColor: textColor,
+                        accentColor: accent,
+                      ),
+                    ),
+                    
+                    // Photos tab
+                    Container(
+                      color: Colors.transparent,
+                      padding: const EdgeInsets.all(16),
+                      child: PhotoLibraryWidget(
                         textColor: textColor,
                         accentColor: accent,
                       ),

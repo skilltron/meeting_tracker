@@ -48,6 +48,12 @@ dependencies:
   # UI enhancements
   cupertino_icons: ^1.0.6
   
+  # Photo/image handling
+  image_picker: ^1.0.7
+  photo_view: ^0.14.0
+  share_plus: ^7.2.1
+  cached_network_image: ^3.3.1
+  
   # Audio alerts (using system haptics for now)
 
 dev_dependencies:

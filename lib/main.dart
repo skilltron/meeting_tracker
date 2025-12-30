@@ -14,6 +14,7 @@ import 'providers/layout_provider.dart';
 import 'providers/obs_provider.dart';
 import 'providers/transcription_provider.dart';
 import 'providers/task_provider.dart';
+import 'providers/photo_provider.dart';
 // import 'providers/vagus_reminder_provider.dart'; // TODO: Re-enable when file exists
 
 void main() async {
@@ -74,6 +75,7 @@ class MeetingTrackerApp extends StatelessWidget {
               previous ?? LayoutProvider(usageTracker),
         ),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => PhotoProvider()),
         ChangeNotifierProvider(create: (_) => OBSProvider()),
         ChangeNotifierProxyProvider2<TaskProvider, OBSProvider, TranscriptionProvider>(
           create: (_) {
