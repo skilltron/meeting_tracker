@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/ui_provider.dart';
 import 'alert_settings_dialog.dart';
+import 'animated_anchor_widget.dart';
 // import 'vagus_reminder_settings_dialog.dart'; // TODO: Re-enable when file exists
 
 class DockControls extends StatefulWidget {
@@ -20,35 +21,47 @@ class _DockControlsState extends State<DockControls> {
       builder: (context, uiProvider, child) {
         return Stack(
           children: [
-            // Dock button
+            // Anchor button - toggle anchored/docked state
             GestureDetector(
               onTap: () {
+                final uiProvider = Provider.of<UIProvider>(context, listen: false);
+                uiProvider.toggleAnchored();
+                // Show menu on long press or double tap
                 setState(() {
-                _showMenu = !_showMenu;
-              });
+                  _showMenu = !_showMenu;
+                });
+              },
+              onLongPress: () {
+                setState(() {
+                  _showMenu = !_showMenu;
+                });
               },
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A1A2E).withOpacity(0.8),
                   border: Border.all(
-                    color: const Color(0xFFA8D5BA).withOpacity(0.4),
-                    width: 1.5,
+                    color: uiProvider.isAnchored 
+                        ? const Color(0xFFA8D5BA).withOpacity(0.6)
+                        : const Color(0xFFB8D4E3).withOpacity(0.4),
+                    width: uiProvider.isAnchored ? 2.0 : 1.5,
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFA8D5BA).withOpacity(0.2),
+                      color: uiProvider.isAnchored
+                          ? const Color(0xFFA8D5BA).withOpacity(0.3)
+                          : const Color(0xFFA8D5BA).withOpacity(0.2),
                       blurRadius: 12,
                     ),
                   ],
                 ),
-                child: const Text(
-                  '⚓',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFFA8D5BA),
-                  ),
+                child: AnimatedAnchorWidget(
+                  isAnchored: uiProvider.isAnchored,
+                  size: 24.0,
+                  color: uiProvider.isAnchored 
+                      ? const Color(0xFFA8D5BA)
+                      : const Color(0xFFB8D4E3),
                 ),
               ),
             ),

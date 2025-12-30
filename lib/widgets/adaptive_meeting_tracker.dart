@@ -15,6 +15,7 @@ import 'social_tips_widget.dart';
 import 'breathing_exercise_widget.dart';
 import 'quick_notes_widget.dart';
 import 'animated_turtle_widget.dart';
+import 'obs_recording_widget.dart';
 // import 'vagus_reminder_widget.dart'; // TODO: Re-enable when file exists
 
 class AdaptiveMeetingTracker extends StatelessWidget {
@@ -49,6 +50,7 @@ class AdaptiveMeetingTracker extends StatelessWidget {
                 // Main content
                 Expanded(
                   child: Container(
+                    color: Colors.transparent,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     child: SingleChildScrollView(
                       child: Column(
@@ -69,6 +71,9 @@ class AdaptiveMeetingTracker extends StatelessWidget {
                           // Secondary features - shown based on mode
                           if (config.mode != LayoutMode.compact)
                             _buildSecondarySection(context, config, predictedFeatures),
+                          
+                          // Add bottom padding for scroll
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
@@ -235,6 +240,8 @@ class AdaptiveMeetingTracker extends StatelessWidget {
               TimerWidget(textColor: textColor),
               const SizedBox(height: 18),
               MeetingInfoWidget(textColor: textColor, accentColor: accentColor),
+              const SizedBox(height: 18),
+              OBSRecordingWidget(textColor: textColor, accentColor: accentColor),
             ],
           ),
         ),
@@ -337,6 +344,11 @@ class AdaptiveMeetingTracker extends StatelessWidget {
         );
       case FeatureType.notes:
         return const SizedBox.shrink(); // Notes handled separately
+      case FeatureType.obs:
+        return OBSRecordingWidget(
+          textColor: textColor,
+          accentColor: accentColor,
+        );
       default:
         return const SizedBox.shrink();
     }

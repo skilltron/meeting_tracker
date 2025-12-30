@@ -18,11 +18,12 @@ class UIProvider with ChangeNotifier {
   DockPosition _dockPosition = DockPosition.right;
   bool _stayOnTop = false;
   bool _mirrorMode = false;
-  double _opacity = 0.15; // Very dark until clicked
+  bool _isAnchored = true; // Window is anchored/docked by default
+  double _opacity = 0.85; // More visible by default (was 0.15)
   double _flashDuration = 10.0; // No flashing until 10 min before
   bool _isMeetingApproaching = false;
-  bool _hasBeenClicked = false; // Track if user has interacted
-  double _brightness = 0.15; // Dark by default
+  bool _hasBeenClicked = true; // Start as clicked so content is visible (was false)
+  double _brightness = 0.85; // More visible by default (was 0.15)
   bool _isOverlayMode = false; // Track if in overlay mode
   double _ghostOpacity = 0.15; // Ghost transparency for overlay mode
   
@@ -39,6 +40,7 @@ class UIProvider with ChangeNotifier {
   DockPosition get dockPosition => _dockPosition;
   bool get stayOnTop => _stayOnTop;
   bool get mirrorMode => _mirrorMode;
+  bool get isAnchored => _isAnchored;
   double get opacity => _opacity;
   double get flashDuration => _flashDuration;
   bool get isMeetingApproaching => _isMeetingApproaching;
@@ -65,6 +67,7 @@ class UIProvider with ChangeNotifier {
     _isOverlayMode = _dockPosition == DockPosition.overlay;
     _stayOnTop = prefs.getBool('stayOnTop') ?? false;
     _mirrorMode = prefs.getBool('mirrorMode') ?? false;
+    _isAnchored = prefs.getBool('isAnchored') ?? true;
     _visualAlertsEnabled = prefs.getBool('visualAlerts') ?? true;
     _audioAlertsEnabled = prefs.getBool('audioAlerts') ?? false;
     _lowStimulationMode = prefs.getBool('lowStimulationMode') ?? false;
@@ -111,6 +114,20 @@ class UIProvider with ChangeNotifier {
     _mirrorMode = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('mirrorMode', value);
+    notifyListeners();
+  }
+  
+  Future<void> toggleAnchored() async {
+    _isAnchored = !_isAnchored;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isAnchored', _isAnchored);
+    notifyListeners();
+  }
+  
+  Future<void> setAnchored(bool value) async {
+    _isAnchored = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isAnchored', _isAnchored);
     notifyListeners();
   }
   

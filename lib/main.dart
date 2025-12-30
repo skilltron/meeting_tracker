@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:provider/provider.dart';
-import 'dart:io' show Platform;
 import 'screens/home_screen.dart';
 import 'providers/meeting_provider.dart';
 import 'providers/calendar_provider.dart';
@@ -12,6 +11,9 @@ import 'providers/breathing_provider.dart';
 import 'providers/notes_provider.dart';
 import 'providers/usage_tracker_provider.dart';
 import 'providers/layout_provider.dart';
+import 'providers/obs_provider.dart';
+import 'providers/transcription_provider.dart';
+import 'providers/task_provider.dart';
 // import 'providers/vagus_reminder_provider.dart'; // TODO: Re-enable when file exists
 
 void main() async {
@@ -70,6 +72,25 @@ class MeetingTrackerApp extends StatelessWidget {
           ),
           update: (_, usageTracker, previous) =>
               previous ?? LayoutProvider(usageTracker),
+        ),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => OBSProvider()),
+        ChangeNotifierProxyProvider2<TaskProvider, OBSProvider, TranscriptionProvider>(
+          create: (_) {
+            final taskProvider = Provider.of<TaskProvider>(_, listen: false);
+            final obsProvider = Provider.of<OBSProvider>(_, listen: false);
+            final transcriptionProvider = TranscriptionProvider(taskProvider, obsProvider);
+            obsProvider.setTranscriptionProvider(transcriptionProvider);
+            return transcriptionProvider;
+          },
+          update: (_, taskProvider, obsProvider, previous) {
+            if (previous != null) {
+              return previous;
+            }
+            final transcriptionProvider = TranscriptionProvider(taskProvider, obsProvider);
+            obsProvider.setTranscriptionProvider(transcriptionProvider);
+            return transcriptionProvider;
+          },
         ),
         // ChangeNotifierProvider(create: (_) => VagusReminderProvider()), // TODO: Re-enable when file exists
       ],

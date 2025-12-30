@@ -72,7 +72,26 @@ class CalendarService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final items = data['items'] as List? ?? [];
-      return items.map((item) => CalendarEvent.fromJson(item, 'google')).toList();
+      return items.map((item) {
+        // Google Calendar may have hangoutLink or conferenceData
+        final hangoutLink = item['hangoutLink'];
+        final conferenceData = item['conferenceData'];
+        final meetingLink = hangoutLink ?? 
+                           conferenceData?['entryPoints']?[0]?['uri'] ??
+                           item['location']; // Sometimes location contains the link
+        
+        // Try to extract from description if not in main fields
+        final description = item['description'] ?? '';
+        final location = item['location'] ?? '';
+        
+        // Create enhanced item with meeting link
+        final enhancedItem = Map<String, dynamic>.from(item);
+        if (meetingLink != null && meetingLink.toString().startsWith('http')) {
+          enhancedItem['hangoutLink'] = meetingLink;
+        }
+        
+        return CalendarEvent.fromJson(enhancedItem, 'google');
+      }).toList();
     }
     
     return [];
@@ -102,7 +121,19 @@ class CalendarService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final items = data['value'] as List? ?? [];
-      return items.map((item) => CalendarEvent.fromJson(item, 'outlook')).toList();
+      return items.map((item) {
+        // Microsoft Graph API has onlineMeeting with joinUrl
+        final onlineMeeting = item['onlineMeeting'];
+        final joinUrl = onlineMeeting?['joinUrl'];
+        
+        // Create enhanced item with meeting link
+        final enhancedItem = Map<String, dynamic>.from(item);
+        if (joinUrl != null) {
+          enhancedItem['joinUrl'] = joinUrl;
+        }
+        
+        return CalendarEvent.fromJson(enhancedItem, 'outlook');
+      }).toList();
     }
     
     return [];

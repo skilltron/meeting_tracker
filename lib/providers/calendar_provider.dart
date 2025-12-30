@@ -119,8 +119,11 @@ class CalendarProvider with ChangeNotifier {
     }
   }
   
+  CalendarEvent? _previousCurrentEvent;
+  
   void _updateCurrentAndUpcoming() {
     final now = DateTime.now();
+    final previousEvent = _currentEvent;
     _currentEvent = null;
     _upcomingEvents = [];
     
@@ -133,6 +136,16 @@ class CalendarProvider with ChangeNotifier {
     }
     
     _upcomingEvents.sort((a, b) => a.start.compareTo(b.start));
+    
+    // Trigger OBS auto-start/stop when meeting changes
+    if (previousEvent != _currentEvent) {
+      _notifyOBSProvider();
+    }
+  }
+  
+  void _notifyOBSProvider() {
+    // This will be called from the widget that has access to OBSProvider
+    // We'll handle it in the meeting info widget
   }
   
   CalendarEvent? getNextMeetingIn20Minutes() {

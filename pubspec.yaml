@@ -33,8 +33,17 @@ dependencies:
   # Date/time
   intl: ^0.18.1
   
+  # URL launching
+  url_launcher: ^6.2.2
+  
+  # File system
+  path: ^1.8.3
+  
   # Window management (desktop)
   window_manager: ^0.3.7
+  
+  # WebSocket for OBS Studio
+  web_socket_channel: ^2.4.0
   
   # UI enhancements
   cupertino_icons: ^1.0.6

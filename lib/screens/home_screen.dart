@@ -13,6 +13,7 @@ import '../widgets/stimulation_mode_toggle.dart';
 import '../widgets/dock_controls.dart';
 import '../widgets/quick_notes_widget.dart';
 import '../widgets/alarm_dialog.dart';
+import '../screens/main_tab_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,8 +46,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final uiProvider = Provider.of<UIProvider>(context, listen: false);
     uiProvider.addListener(_updateFlashAnimation);
     
-    // Start brightness at dark
-    _brightnessController.value = 0.15;
+    // Start brightness at more visible level
+    _brightnessController.value = 0.85;
     
     // Update visual effects every second
     _visualUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -197,63 +198,63 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ? 2.0 + (uiProvider.alertIntensity * 2.0) // 2-4px based on intensity
                 : 0.0;
             
-            return Container(
-              decoration: borderWidth > 0
-                  ? BoxDecoration(
-                      color: backgroundColor,
-                      border: Border.all(
-                        color: borderColor,
-                        width: borderWidth,
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Container(
+                decoration: borderWidth > 0
+                    ? BoxDecoration(
+                        color: backgroundColor,
+                        border: Border.all(
+                          color: borderColor,
+                          width: borderWidth,
+                        ),
+                      )
+                    : null,
+                color: borderWidth == 0 ? backgroundColor : null,
+                child: Stack(
+                  children: [
+                    // Main content with ghost transparency in overlay mode
+                    Positioned.fill(
+                      child: Opacity(
+                        opacity: effectiveOpacity.clamp(0.3, 1.0), // Ensure minimum visibility
+                        child: MainTabScreen(),
                       ),
-                    )
-                  : null,
-              color: borderWidth == 0 ? backgroundColor : null,
-              child: Stack(
-                children: [
-                  // Main content with ghost transparency in overlay mode
-                  Positioned.fill(
-                    child: Opacity(
-                      opacity: effectiveOpacity,
-                      child: AdaptiveMeetingTracker(
+                    ),
+                    
+                    // Dock controls - more visible in overlay mode
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Opacity(
+                        opacity: (uiProvider.isOverlayMode
+                            ? uiProvider.ghostOpacity + 0.2
+                            : brightness).clamp(0.5, 1.0), // Ensure controls are visible
+                        child: const DockControls(),
+                      ),
+                    ),
+                    
+                    // Stimulation mode toggle - top left
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Opacity(
+                        opacity: (uiProvider.isOverlayMode
+                            ? uiProvider.ghostOpacity + 0.2
+                            : brightness).clamp(0.5, 1.0), // Ensure controls are visible
+                        child: const StimulationModeToggle(),
+                      ),
+                    ),
+                    
+                    // Quick Notes - bottom left (already uses Positioned internally)
+                    Opacity(
+                      opacity: effectiveOpacity.clamp(0.5, 1.0), // Ensure notes are visible
+                      child: QuickNotesWidget(
                         textColor: textColor,
                         accentColor: accent,
                       ),
                     ),
-                  ),
-                  
-                  // Dock controls - more visible in overlay mode
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Opacity(
-                      opacity: uiProvider.isOverlayMode
-                          ? uiProvider.ghostOpacity + 0.2
-                          : brightness,
-                      child: const DockControls(),
-                    ),
-                  ),
-                  
-                  // Stimulation mode toggle - top left
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Opacity(
-                      opacity: uiProvider.isOverlayMode
-                          ? uiProvider.ghostOpacity + 0.2
-                          : brightness,
-                      child: const StimulationModeToggle(),
-                    ),
-                  ),
-                  
-                  // Quick Notes - bottom left
-                  Opacity(
-                    opacity: effectiveOpacity,
-                    child: QuickNotesWidget(
-                      textColor: textColor,
-                      accentColor: accent,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
             },

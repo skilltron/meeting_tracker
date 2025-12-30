@@ -13,6 +13,7 @@ enum FeatureType {
   scheduler,
   moonPhase,
   quote,
+  obs,
 }
 
 class UsageEvent {
